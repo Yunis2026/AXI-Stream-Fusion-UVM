@@ -1,0 +1,18 @@
+# Verilator build outputs
+obj_dir/
+*.vcd
+*.fst
+
+# Simulation outputs
+*.log
+*.out
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# VS Code local settings
+.vscode/
