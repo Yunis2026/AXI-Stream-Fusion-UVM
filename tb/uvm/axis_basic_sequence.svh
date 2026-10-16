@@ -3,54 +3,65 @@
  * File    : axis_basic_sequence.svh
  *
  * Description:
- *   Directed AXI-Stream sequence that generates
- *   one three-beat packet.
+ *   Basic AXI-Stream UVM sequence.
  *
- * Packet format:
- *   Beat 0: TDATA=0x000000A1, TKEEP=0xF, TLAST=0
- *   Beat 1: TDATA=0x000000A2, TKEEP=0xF, TLAST=0
- *   Beat 2: TDATA=0x000000A3, TKEEP=0x3, TLAST=1
+ * Features:
+ *   - Generates a three-beat AXI-Stream packet
+ *   - Uses the UVM factory for transaction creation
+ *   - Uses start_item() and finish_item()
+ *   - Sets TDATA, TKEEP and TLAST explicitly
+ *
+ * Packet contents:
+ *   Beat 0: TDATA=0x000000A1, TKEEP=F, TLAST=0
+ *   Beat 1: TDATA=0x000000A2, TKEEP=F, TLAST=0
+ *   Beat 2: TDATA=0x000000A3, TKEEP=3, TLAST=1
  */
 
 class axis_basic_sequence extends uvm_sequence #(axis_beat_item);
 
-    // Register the sequence with the UVM factory.
     `uvm_object_utils(axis_basic_sequence)
 
-    // Constructor for a UVM object.
-    function new(string name = "axis_basic_sequence");
+    // --------------------------------------------------
+    // Constructor
+    // --------------------------------------------------
+
+    function new(
+        string name = "axis_basic_sequence"
+    );
         super.new(name);
     endfunction
 
     // --------------------------------------------------
-    // Sequence body
+    // Main sequence
     // --------------------------------------------------
 
     virtual task body();
 
         axis_beat_item req;
 
-        // Generate a three-beat AXI-Stream packet.
+        // Generate one three-beat AXI-Stream packet.
         for (int i = 0; i < 3; i++) begin
 
-            // Create a new transaction through the factory.
+            // Create each transaction through the
+            // UVM factory.
             req = axis_beat_item::type_id::create(
                 $sformatf("beat_%0d", i)
             );
 
-            // Request permission to send this item.
+            // Request permission from the sequencer.
             start_item(req);
 
-            // Assign directed packet data.
+            // Configure the transaction payload.
             req.tdata = 32'h0000_00A1 + i;
 
-            // The last beat contains two valid bytes.
+            // The final beat contains two valid bytes.
             req.tkeep = (i == 2) ? 4'h3 : 4'hF;
 
             // Assert TLAST only on the final beat.
             req.tlast = (i == 2);
 
-            // Send this transaction to the driver.
+            // Wait until the driver completes
+            // the hardware transfer.
             finish_item(req);
 
             `uvm_info(
