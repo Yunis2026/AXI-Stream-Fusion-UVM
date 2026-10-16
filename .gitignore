@@ -1,20 +1,40 @@
-# Verilator build outputs
-obj_dir/
+# ==================================================
+# AXI-Stream Fusion - UVM Verification Platform
+# Git Ignore Rules
+# ==================================================
+
+# Verilator build artifacts
+/obj_dir/
 *.vcd
 *.fst
 
-# Simulation outputs
+# Simulation-generated files
+/logs/
+/waves/
 *.log
 *.out
+*.fst
+*.vcd
+*.vpd
 
-# macOS
-.DS_Store
-
-# Python
+# Python caches
 __pycache__/
 *.pyc
+*.pyo
+.pytest_cache/
 
-# VS Code local settings
+# macOS files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Local editor configuration
 .vscode/
+
 # Third-party dependencies
 /external/
+
+# Temporary files
+*.swp
+*.swo
+*~
